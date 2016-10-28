@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/roomView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#1c1f25">
+
+    <TextView
+            android:id="@+id/population"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:gravity="center_vertical"
+            android:drawableStart="@drawable/ic_supervisor_account"
+            android:drawableLeft="@drawable/ic_supervisor_account"
+            android:textColor="#FFFFFFFF"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+
+    <TextView
+            android:id="@+id/guests"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_toRightOf="@id/population"
+            android:layout_toEndOf="@id/population"
+            android:gravity="center_vertical"
+            android:drawableStart="@drawable/ic_person"
+            android:drawableLeft="@drawable/ic_person"
+            android:textColor="#808691"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+
+    <ImageView
+            android:id="@+id/favorite"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="#282c35"
+            android:scaleType="center"
+            android:contentDescription="@null"/>
+
+    <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/population"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"
+            android:contentDescription="@null"/>
+
+    <TextView
+            android:id="@+id/playing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/thumbnail"
+            android:gravity="center_vertical"
+            android:drawableLeft="@drawable/ic_volume_up"
+            android:drawableStart="@drawable/ic_volume_up"
+            android:textColor="#808691"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+
+    <TextView
+            android:id="@+id/roomName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/playing"
+            android:gravity="center_vertical"
+            android:textColor="#FFFFFFFF"
+            android:textSize="24sp"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+
+    <TextView
+            android:id="@+id/host"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/roomName"
+            android:gravity="center_vertical"
+            android:textColor="#808691"
+            android:textSize="12sp"
+            android:ellipsize="end"
+            android:singleLine="true"/>
+</RelativeLayout>

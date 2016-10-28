@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PlugDJ</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="idle">Nobody is playing</string>
+    <string name="socket_warning">Warning: No connection</string>
+
+    <string name="host">Hosted by: %s</string>
+</resources>
