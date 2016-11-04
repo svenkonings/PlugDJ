@@ -62,6 +62,7 @@ class Player(implicit context: Context) {
 
   def prepareSoundCloud(uri: Uri, startTime: Long): Unit = {
     val loadControl = new DefaultLoadControl()
+    trackSelector = new DefaultTrackSelector(handler)
     player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
     // TODO: image as view
     applyPlayWhenReady()
