@@ -21,6 +21,7 @@ public class CookieWrapper implements Serializable {
 
     private void writeObject(ObjectOutputStream output) throws IOException {
         output.defaultWriteObject();
+        output.writeInt((Build.VERSION.SDK_INT));
         output.writeObject(cookie.getName());
         output.writeObject(cookie.getValue());
         output.writeObject(cookie.getComment());
@@ -39,6 +40,7 @@ public class CookieWrapper implements Serializable {
 
     private void readObject(ObjectInputStream input) throws IOException, ClassNotFoundException {
         input.defaultReadObject();
+        int storedSdkInt = input.readInt();
         String name = (String) input.readObject();
         String value = (String) input.readObject();
         cookie = new HttpCookie(name, value);
@@ -46,7 +48,7 @@ public class CookieWrapper implements Serializable {
         cookie.setCommentURL((String) input.readObject());
         cookie.setDiscard(input.readBoolean());
         cookie.setDomain((String) input.readObject());
-        if (Build.VERSION.SDK_INT >= 24) {
+        if (Build.VERSION.SDK_INT >= 24 && storedSdkInt >= 24) {
             cookie.setHttpOnly(input.readBoolean());
         }
         cookie.setMaxAge(input.readLong());
