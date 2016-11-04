@@ -11,7 +11,7 @@ import dj.plug.plugdj.socket.Events._
 import dj.plug.plugdj.socket.HttpClient._
 import dj.plug.plugdj.socket.Messages._
 import dj.plug.plugdj.socket.Socket.state
-import dj.plug.plugdj.{Log, getBitmap, post}
+import dj.plug.plugdj.{Log, loadImage, post}
 import org.json.{JSONArray, JSONObject}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,14 +19,15 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
+  implicit val context = listener
   implicit val handler = new Handler()
 
   def applyState(): Unit = state() onComplete {
-    case Success(state) => post(() => {
+    case Success(state) => {
       val playback = state.getJSONObject("playback")
       Log.v(this, s"onState: playback=$playback")
       media(playback.getJSONObject("media"), dateToLong(playback.getString("startTime")))
-    })
+    }
     case Failure(exception) => Log.e(this, exception.getMessage)
   }
 
@@ -53,7 +54,7 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
 
   private var currentId: Int = -1
 
-  private def media(media: JSONObject, startTime: Long): Unit = {
+  private def media(media: JSONObject, startTime: Long): Unit = post(() => {
     val id = media.getInt("id")
     if (currentId == id) return
     currentId = id
@@ -81,14 +82,8 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
     }
 
     val imageAddress = media.getString("image")
-    getBitmap(imageAddress) onComplete {
-      case Success(bitmap) => if (currentId == id) post(() => {
-        Log.v(this, s"onBitmap: bitmap=$bitmap")
-        listener.onBitmap(bitmap)
-      })
-      case Failure(exception) => Log.e(this, exception.getMessage)
-    }
-  }
+    loadImage(imageAddress).into(listener)
+  })
 }
 
 object CommunicationHandler {

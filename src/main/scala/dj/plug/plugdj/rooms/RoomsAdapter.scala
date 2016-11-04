@@ -5,13 +5,10 @@ import android.os.Handler
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.BaseAdapter
-import dj.plug.plugdj._
 import dj.plug.plugdj.player.Broadcasts._
 import dj.plug.plugdj.player.PlayerService
+import dj.plug.plugdj.{R, TR, TypedViewHolder, loadImage}
 import org.json.JSONArray
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
 
 class RoomsAdapter(rooms: JSONArray)(implicit context: Context, handler: Handler) extends BaseAdapter {
 
@@ -45,21 +42,15 @@ class RoomsAdapter(rooms: JSONArray)(implicit context: Context, handler: Handler
       viewHolder.favorite.setImageResource(R.drawable.ic_star_border)
     }
 
-    val imageUrl = room.getString("image")
-    val bitmapUrl = if (imageUrl.startsWith("//")) {
-      "http:" + imageUrl
-    } else if (imageUrl.startsWith("/")) {
-      "https://cdn.plug.dj" + imageUrl
+    val relativeUrl = room.getString("image")
+    val imageUrl = if (relativeUrl.startsWith("//")) {
+      "http:" + relativeUrl
+    } else if (relativeUrl.startsWith("/")) {
+      "https://cdn.plug.dj" + relativeUrl
     } else {
-      imageUrl
+      relativeUrl
     }
-    getBitmap(bitmapUrl) onComplete {
-      case Success(bitmap) => post(() => {
-        viewHolder.thumbnail.setImageBitmap(bitmap)
-        viewHolder.thumbnail.setMaxHeight((viewHolder.thumbnail.getWidth * .75).toInt)
-      })
-      case Failure(exception) => Log.e(this, exception.getMessage)
-    }
+    loadImage(imageUrl).fit().centerCrop().into(viewHolder.thumbnail)
 
     viewHolder.playing.setText(room.getString("media"))
     viewHolder.roomName.setText(room.getString("name"))

@@ -3,10 +3,12 @@ package dj.plug.plugdj.player
 import android.app.Service
 import android.content.{BroadcastReceiver, Context, Intent, IntentFilter}
 import android.graphics.Bitmap
+import android.graphics.drawable.{BitmapDrawable, Drawable}
 import android.net.{ConnectivityManager, Uri}
 import android.os.{IBinder, PowerManager}
 import android.support.v4.content.LocalBroadcastManager
 import com.neovisionaries.ws.client.WebSocket
+import com.squareup.picasso.Picasso.LoadedFrom
 import dj.plug.plugdj.MainApplication._
 import dj.plug.plugdj.cookies.CookieStorage._
 import dj.plug.plugdj.player.Broadcasts._
@@ -122,8 +124,17 @@ class PlayerService extends Service with SocketListener {
 
   override def onVideo(uri: Uri, format: Int, startTime: Long): Unit = player.prepare(uri, format, startTime)
 
-  override def onBitmap(bitmap: Bitmap): Unit = {
+  override def onPrepareLoad(drawable: Drawable): Unit = drawable match {
+    case bitmapDrawable: BitmapDrawable =>
+      notificationManager.setBitmap(bitmapDrawable.getBitmap)
+      notificationManager.update()
+    case _ => Log.w(this, s"Invalid drawable received: $drawable")
+  }
+
+  override def onBitmapLoaded(bitmap: Bitmap, from: LoadedFrom): Unit = {
     notificationManager.setBitmap(bitmap)
     notificationManager.update()
   }
+
+  override def onBitmapFailed(errorDrawable: Drawable): Unit = Log.e(this, "Failed to load bitmap")
 }
