@@ -7,7 +7,7 @@ import dj.plug.plugdj.player.PlayerActivity
 import dj.plug.plugdj.rooms.RoomActivity
 
 class LaunchActivity extends AppCompatActivity {
-  implicit val context = this
+  implicit private val context = this
 
   override def onResume(): Unit = {
     super.onResume()

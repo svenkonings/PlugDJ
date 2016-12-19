@@ -65,15 +65,8 @@ public class CookieWrapper implements Serializable {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        } else if (other == null) {
-            return false;
-        } else if (other instanceof CookieWrapper) {
-            return cookie.equals(((CookieWrapper) other).getCookie());
-        } else {
-            return false;
-        }
+        return this == other ||
+                other instanceof CookieWrapper && cookie.equals(((CookieWrapper) other).getCookie());
     }
 
     @Override

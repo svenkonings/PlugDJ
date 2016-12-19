@@ -35,6 +35,8 @@ public class CookieStorage {
         return new File(context.getCacheDir(), FILENAME);
     }
 
+    // Can't check type because of type erasure, and we already catch the potential ClassCastException
+    @SuppressWarnings("unchecked")
     private static CookieManager loadCookieManager(File file) {
         if (!file.canRead()) return new CookieManager();
         ObjectInputStream input = null;

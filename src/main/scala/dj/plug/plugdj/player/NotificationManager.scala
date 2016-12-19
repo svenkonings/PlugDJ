@@ -8,14 +8,14 @@ import android.support.v7.app.NotificationCompat
 import dj.plug.plugdj.R
 import dj.plug.plugdj.player.Broadcasts._
 
-class NotificationManager(notifyId: Int = 1)(implicit context: Context) {
+class NotificationManager(val notifyId: Int = 0)(implicit context: Context) {
   private val notificationManager = NotificationManagerCompat.from(context)
 
-  private var playWhenReady: Boolean = true
-  private var title: String = context.getString(R.string.app_name)
-  private var userName: String = null
-  private var bitmap: Bitmap = null
-  private var connected: Boolean = true
+  var playWhenReady: Boolean = true
+  var title: String = context.getString(R.string.app_name)
+  var userName: String = null
+  var bitmap: Bitmap = null
+  var connected: Boolean = true
 
   def update(): Unit = {
     notificationManager.notify(notifyId, build)
@@ -60,27 +60,5 @@ class NotificationManager(notifyId: Int = 1)(implicit context: Context) {
     val intent = new Intent(context, classOf[PlayerService])
     intent.setAction(action)
     PendingIntent.getService(context, notifyId, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-  }
-
-  def getNotifyId: Int = notifyId
-
-  def setPlayWhenReady(value: Boolean): Unit = {
-    playWhenReady = value
-  }
-
-  def setTitle(value: String): Unit = {
-    title = value
-  }
-
-  def setUserName(value: String): Unit = {
-    userName = value
-  }
-
-  def setBitmap(value: Bitmap): Unit = {
-    bitmap = value
-  }
-
-  def setConnected(value: Boolean): Unit = {
-    connected = value
   }
 }

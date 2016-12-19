@@ -17,8 +17,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
 class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
-  implicit val context = listener
-  implicit val handler = new Handler()
+  implicit private val context = listener
+  implicit private val handler = new Handler()
 
   def applyState(): Unit = state() onComplete {
     case Success(state) =>

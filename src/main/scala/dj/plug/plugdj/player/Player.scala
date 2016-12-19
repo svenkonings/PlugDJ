@@ -20,16 +20,15 @@ class Player(implicit context: Context) {
   private val bandwidthMeter = new DefaultBandwidthMeter()
   private val userAgent = Util.getUserAgent(context, "PlugDJ")
 
-  private var playWhenReady = true
-  private var videoDisabled = false
+  private var _view: SimpleExoPlayerView = null
+  private var _videoDisabled = false
+  private var _playWhenReady = true
 
   private var player: SimpleExoPlayer = null
   private var trackSelector: DefaultTrackSelector = null
   private var currentFormat: Int = 0
   private var prevUri: Uri = null
   private var startTime: Long = 0L
-
-  private var view: SimpleExoPlayerView = null
 
   def prepare(uri: Uri, format: Int, startTime: Long): Unit = {
     if (uri == prevUri && player != null && player.getPlaybackState != ExoPlayer.STATE_IDLE) return
@@ -82,10 +81,31 @@ class Player(implicit context: Context) {
     startTime = 0L
   }
 
-  def getPlayWhenReady: Boolean = playWhenReady
+  private def hasVideo(): Boolean = currentFormat == 1
 
-  def setPlayWhenReady(value: Boolean): Unit = {
-    playWhenReady = value
+  def view: SimpleExoPlayerView = _view
+
+  def view_=(value: SimpleExoPlayerView): Unit = {
+    _view = value
+    applyView()
+  }
+
+  private def applyView(): Unit = if (view != null) view.setPlayer(player)
+
+  def videoDisabled: Boolean = _videoDisabled
+
+  def videoDisabled_=(value: Boolean): Unit = {
+    _videoDisabled = value
+    applyVideoDisabled()
+  }
+
+  private def applyVideoDisabled(): Unit =
+    if (trackSelector != null && hasVideo()) trackSelector.setRendererDisabled(VIDEO_TRACK, videoDisabled)
+
+  def playWhenReady: Boolean = _playWhenReady
+
+  def playWhenReady_=(value: Boolean): Unit = {
+    _playWhenReady = value
     applyPlayWhenReady()
   }
 
@@ -94,29 +114,7 @@ class Player(implicit context: Context) {
     sync()
   }
 
-  def getView: SimpleExoPlayerView = view
-
-  def setView(value: SimpleExoPlayerView): Unit = {
-    view = value
-    applyView()
-  }
-
-  private def applyView(): Unit = if (view != null) view.setPlayer(player)
-
-  private def hasVideo(): Boolean = currentFormat == 1
-
-  def getVideoDisabled: Boolean = videoDisabled
-
-  def setVideoDisabled(value: Boolean): Unit = {
-    videoDisabled = value
-    applyVideoDisabled()
-  }
-
-  private def applyVideoDisabled(): Unit =
-    if (trackSelector != null && hasVideo()) trackSelector.setRendererDisabled(VIDEO_TRACK, videoDisabled)
-
-
-  def setStartTime(value: Long): Unit = {
+  private def setStartTime(value: Long): Unit = {
     startTime = value
     sync()
   }

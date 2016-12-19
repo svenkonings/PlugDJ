@@ -19,6 +19,7 @@ class RoomsAdapter(rooms: JSONArray)(implicit context: Context, handler: Handler
   override def getItemId(position: Int): Long = position
 
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
+    // TODO: update rooms and scroll further
     val room = rooms.getJSONObject(position)
     val viewHolder = if (convertView == null) {
       TypedViewHolder.inflate(LayoutInflater.from(context), TR.layout.room, parent, false).asInstanceOf[TypedViewHolder.room]

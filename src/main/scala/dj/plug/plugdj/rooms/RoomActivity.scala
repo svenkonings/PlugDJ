@@ -11,8 +11,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
 class RoomActivity extends AppCompatActivity {
-  implicit val context = this
-  implicit val handler = new Handler()
+  implicit private val context = this
+  implicit private val handler = new Handler()
 
   private var viewHolder: TypedViewHolder.rooms = null
 

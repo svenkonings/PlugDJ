@@ -1,6 +1,6 @@
 package dj.plug.plugdj.socket
 
-import java.io.{InputStream, OutputStream, OutputStreamWriter}
+import java.io.{IOException, InputStream, OutputStream, OutputStreamWriter}
 import java.net.{HttpURLConnection, URL}
 import java.util
 
@@ -54,6 +54,6 @@ object HttpClient {
 
   private def invalidResponse(responseCode: Int): Boolean = responseCode >= 300
 
-  case class RequestException(msg: String) extends Exception(msg)
+  case class RequestException(msg: String) extends IOException(msg)
 
 }

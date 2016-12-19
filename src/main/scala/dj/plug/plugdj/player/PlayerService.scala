@@ -18,7 +18,7 @@ import dj.plug.plugdj.{Log, R}
 import scala.concurrent.Future
 
 class PlayerService extends Service with SocketListener {
-  implicit val context = this
+  implicit private val context = this
 
   private var wakeLock: PowerManager#WakeLock = null
   private var notificationManager: NotificationManager = null
@@ -35,7 +35,7 @@ class PlayerService extends Service with SocketListener {
       val connection = activeNetwork != null && activeNetwork.isConnected
       Log.v(PlayerService.this, s"onReceive: connection=$connection, socket.isConnected=${socket.isConnected}")
       if (!socket.isConnected && connection) connectSocket()
-      notificationManager.setConnected(connection)
+      notificationManager.connected = connection
       // TODO: notify connected
     }
   }
@@ -46,7 +46,7 @@ class PlayerService extends Service with SocketListener {
     wakeLock.acquire()
 
     notificationManager = new NotificationManager()
-    startForeground(notificationManager.getNotifyId, notificationManager.build)
+    startForeground(notificationManager.notifyId, notificationManager.build)
 
     loadCookies(this)
 
@@ -55,7 +55,6 @@ class PlayerService extends Service with SocketListener {
     registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
     setPlayerService(this)
-    sendLocalBroadcast(SERVICE_STARTED)
   }
 
 
@@ -111,14 +110,14 @@ class PlayerService extends Service with SocketListener {
   def getPlayer: Player = player
 
   def setPlayWhenReady(playWhenReady: Boolean): Unit = {
-    player.setPlayWhenReady(playWhenReady)
-    notificationManager.setPlayWhenReady(playWhenReady)
+    player.playWhenReady = playWhenReady
+    notificationManager.playWhenReady = playWhenReady
     notificationManager.update()
   }
 
   override def onAdvance(title: String, author: String): Unit = {
-    notificationManager.setTitle(title)
-    notificationManager.setUserName(author)
+    notificationManager.title = title
+    notificationManager.userName = author
     notificationManager.update()
   }
 
@@ -126,13 +125,13 @@ class PlayerService extends Service with SocketListener {
 
   override def onPrepareLoad(drawable: Drawable): Unit = drawable match {
     case bitmapDrawable: BitmapDrawable =>
-      notificationManager.setBitmap(bitmapDrawable.getBitmap)
+      notificationManager.bitmap = bitmapDrawable.getBitmap
       notificationManager.update()
     case _ => Log.w(this, s"Invalid drawable received: $drawable")
   }
 
   override def onBitmapLoaded(bitmap: Bitmap, from: LoadedFrom): Unit = {
-    notificationManager.setBitmap(bitmap)
+    notificationManager.bitmap = bitmap
     notificationManager.update()
   }
 

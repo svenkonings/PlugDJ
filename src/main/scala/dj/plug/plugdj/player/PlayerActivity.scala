@@ -10,13 +10,13 @@ import dj.plug.plugdj.rooms.RoomActivity
 import dj.plug.plugdj.{Log, TR, TypedViewHolder}
 
 class PlayerActivity extends AppCompatActivity {
-  implicit val context = this
+  implicit private val context = this
 
   private var viewHolder: TypedViewHolder.player = null
 
   private val receiver = new BroadcastReceiver {
     override def onReceive(context: Context, intent: Intent): Unit = intent.getStringExtra(BROADCAST) match {
-      case SERVICE_STARTED => setView() // TODO: no longer needed
+      // TODO: display warning and error messages
       case SERVICE_STOPPED => onBackPressed()
       case _ => Log.e(PlayerActivity.this, s"Unknown command: ${intent.getStringExtra(BROADCAST)}")
     }
@@ -25,6 +25,7 @@ class PlayerActivity extends AppCompatActivity {
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     viewHolder = TypedViewHolder.setContentView(this, TR.layout.player).asInstanceOf[TypedViewHolder.player]
+    // TODO: custom controller
     viewHolder.playerView.setUseController(false)
   }
 
@@ -50,8 +51,8 @@ class PlayerActivity extends AppCompatActivity {
     val service = getPlayerService
     if (service != null) {
       val player = service.getPlayer
-      player.setView(viewHolder.playerView)
-      player.setVideoDisabled(false)
+      player.view = viewHolder.playerView
+      player.videoDisabled = false
     } else {
       onBackPressed()
     }
@@ -61,8 +62,8 @@ class PlayerActivity extends AppCompatActivity {
     val service = getPlayerService
     if (service != null) {
       val player = service.getPlayer
-      player.setVideoDisabled(true)
-      player.setView(null)
+      player.videoDisabled = true
+      player.view = null
     }
   }
 }
