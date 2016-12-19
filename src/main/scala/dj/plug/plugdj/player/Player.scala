@@ -8,7 +8,7 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.dash.{DashMediaSource, DefaultDashChunkSource}
 import com.google.android.exoplayer2.trackselection.{AdaptiveVideoTrackSelection, DefaultTrackSelector}
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView
-import com.google.android.exoplayer2.upstream.{DefaultBandwidthMeter, DefaultDataSourceFactory}
+import com.google.android.exoplayer2.upstream._
 import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.{DefaultLoadControl, ExoPlayer, ExoPlayerFactory, SimpleExoPlayer}
 import dj.plug.plugdj.Log
@@ -47,14 +47,14 @@ class Player(implicit context: Context) {
   def prepareYoutube(uri: Uri, startTime: Long): Unit = {
     val loadControl = new DefaultLoadControl()
     val videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(bandwidthMeter)
-    trackSelector = new DefaultTrackSelector(handler, videoTrackSelectionFactory)
+    trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory)
     player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
     applyView()
     applyVideoDisabled()
     applyPlayWhenReady()
     setStartTime(startTime)
-    val manifestDataSource = new DefaultDataSourceFactory(context, userAgent)
-    val chunkDataSource = new DefaultDataSourceFactory(context, userAgent, bandwidthMeter)
+    val manifestDataSource = generateDataSourceFactory(context, userAgent)
+    val chunkDataSource = generateDataSourceFactory(context, userAgent, bandwidthMeter)
     val chunkSource = new DefaultDashChunkSource.Factory(chunkDataSource)
     val mediaSource = new DashMediaSource(uri, manifestDataSource, chunkSource, null, null)
     player.prepare(mediaSource)
@@ -62,12 +62,12 @@ class Player(implicit context: Context) {
 
   def prepareSoundCloud(uri: Uri, startTime: Long): Unit = {
     val loadControl = new DefaultLoadControl()
-    trackSelector = new DefaultTrackSelector(handler)
+    trackSelector = new DefaultTrackSelector()
     player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
     // TODO: image as view
     applyPlayWhenReady()
     setStartTime(startTime)
-    val dataSource = new DefaultDataSourceFactory(context, userAgent, bandwidthMeter)
+    val dataSource = generateDataSourceFactory(context, userAgent, bandwidthMeter)
     val extractors = new DefaultExtractorsFactory()
     val mediaSource = new ExtractorMediaSource(uri, dataSource, extractors, null, null)
     player.prepare(mediaSource)
@@ -137,4 +137,12 @@ object Player {
   private val SYNC_DELAY = 1000L
   private val BUFFER_COMPENSATION = 1500L
   private val MAX_PLAYER_DELAY = 3000L
+
+  /**
+    * Generates a DefaultDataSourceFactory with allowCrossProtocolRedirects set to true.
+    */
+  private def generateDataSourceFactory(context: Context, userAgent: String, listener: TransferListener[_ >: DataSource] = null): DefaultDataSourceFactory = {
+    val httpDataSourceFactory = new DefaultHttpDataSourceFactory(userAgent, listener, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS, DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, true)
+    new DefaultDataSourceFactory(context, listener, httpDataSourceFactory)
+  }
 }

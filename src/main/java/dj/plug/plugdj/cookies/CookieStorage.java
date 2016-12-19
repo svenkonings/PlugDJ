@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CookieStorage {
-    public static String TAG = "CookieStorage";
-    public static String FILENAME = "cookiemap.obj";
+    public static final String TAG = "CookieStorage";
+    public static final String FILENAME = "cookiemap.obj";
 
     public static void loadCookies(Context context) {
         if (CookieHandler.getDefault() == null) {

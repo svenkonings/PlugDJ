@@ -52,9 +52,7 @@ object HttpClient {
     writer.flush()
   }
 
-  private def invalidResponse(responseCode: Int): Boolean = {
-    responseCode >= 300
-  }
+  private def invalidResponse(responseCode: Int): Boolean = responseCode >= 300
 
   case class RequestException(msg: String) extends Exception(msg)
 

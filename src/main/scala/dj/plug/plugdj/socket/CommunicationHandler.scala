@@ -8,14 +8,12 @@ import com.neovisionaries.ws.client.{WebSocket, WebSocketAdapter}
 import dj.plug.plugdj.Conversions.{stringToJson, stringToUri}
 import dj.plug.plugdj.socket.CommunicationHandler._
 import dj.plug.plugdj.socket.Events._
-import dj.plug.plugdj.socket.HttpClient._
 import dj.plug.plugdj.socket.Messages._
 import dj.plug.plugdj.socket.Socket.state
 import dj.plug.plugdj.{Log, loadImage, post}
 import org.json.{JSONArray, JSONObject}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
@@ -23,11 +21,10 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
   implicit val handler = new Handler()
 
   def applyState(): Unit = state() onComplete {
-    case Success(state) => {
+    case Success(state) =>
       val playback = state.getJSONObject("playback")
       Log.v(this, s"onState: playback=$playback")
       media(playback.getJSONObject("media"), dateToLong(playback.getString("startTime")))
-    }
     case Failure(exception) => Log.e(this, exception.getMessage)
   }
 
@@ -67,13 +64,10 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
     val format = media.getInt("format")
     val cid = media.getString("cid")
     format match {
-      case YOUTUBE => getYoutubeManifest(cid) onComplete {
-        case Success(uri) => if (currentId == id) post(() => {
-          Log.v(this, s"onVideo: uri=$uri, format=$format, startTime=$startTime")
-          listener.onVideo(uri, format, startTime)
-        })
-        case Failure(exception) => Log.e(this, exception.getMessage)
-      }
+      case YOUTUBE =>
+        val uri = s"https://youtube-dash.herokuapp.com/youtube/$cid"
+        Log.v(this, s"onVideo: uri=$uri, format=$format, startTime=$startTime")
+        listener.onVideo(uri, format, startTime)
       case SOUNDCLOUD =>
         val uri = s"https://api.soundcloud.com/tracks/$cid/stream?client_id=2439302986cfe7971e18a568c879e6c2"
         Log.v(this, s"onVideo: uri=$uri, format=$format, startTime=$startTime")
@@ -89,10 +83,6 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
 object CommunicationHandler {
   val YOUTUBE = 1
   val SOUNDCLOUD = 2
-
-  private def getYoutubeManifest(videoId: String): Future[String] = Future {
-    get(s"https://youtube-dash.herokuapp.com/youtube/$videoId")
-  }
 
   private def dateToLong(date: String): Long = Timestamp.valueOf(date).getTime + getTimezoneOffset
 

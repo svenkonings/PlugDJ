@@ -216,16 +216,13 @@
 # view res/layout/abc_screen_simple_overlay_action_mode.xml #generated:32
 -keep class android.support.v7.widget.ViewStubCompat { <init>(...); }
 
-# view res/layout/exo_simple_player_view.xml #generated:20
+# view res/layout/exo_simple_player_view.xml #generated:18
 -keep class com.google.android.exoplayer2.ui.AspectRatioFrameLayout { <init>(...); }
-
-# view res/layout/exo_simple_player_view.xml #generated:36
--keep class com.google.android.exoplayer2.ui.PlaybackControlView { <init>(...); }
 
 # view res/layout/player.xml #generated:2
 -keep class com.google.android.exoplayer2.ui.SimpleExoPlayerView { <init>(...); }
 
-# view res/layout/exo_simple_player_view.xml #generated:30
+# view res/layout/exo_simple_player_view.xml #generated:35
 -keep class com.google.android.exoplayer2.ui.SubtitleView { <init>(...); }
 
 # view AndroidManifest.xml #generated:22
