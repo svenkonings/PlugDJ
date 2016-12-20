@@ -51,33 +51,31 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
 
   private var currentId: Int = -1
 
-  private def media(media: JSONObject, startTime: Long): Unit = post(() => {
+  private def media(media: JSONObject, startTime: Long): Unit = {
     val id = media.getInt("id")
     if (currentId == id) return
     currentId = id
 
     val title = media.getString("title")
     val author = media.getString("author")
-    Log.v(this, s"onAdvance: title=$title, author=$author")
-    listener.onAdvance(title, author)
-
     val format = media.getInt("format")
     val cid = media.getString("cid")
-    format match {
-      case YOUTUBE =>
-        val uri = s"https://youtube-dash.herokuapp.com/youtube/$cid"
-        Log.v(this, s"onVideo: uri=$uri, format=$format, startTime=$startTime")
-        listener.onVideo(uri, format, startTime)
-      case SOUNDCLOUD =>
-        val uri = s"https://api.soundcloud.com/tracks/$cid/stream?client_id=2439302986cfe7971e18a568c879e6c2"
-        Log.v(this, s"onVideo: uri=$uri, format=$format, startTime=$startTime")
-        listener.onVideo(uri, format, startTime)
+    val uri = format match {
+      case YOUTUBE => s"https://youtube-dash.herokuapp.com/youtube/$cid"
+      case SOUNDCLOUD => s"https://api.soundcloud.com/tracks/$cid/stream?client_id=2439302986cfe7971e18a568c879e6c2"
       case _ => Log.e(this, s"Unknown format: $format")
+        return
     }
-
     val imageAddress = media.getString("image")
-    loadImage(imageAddress).into(listener)
-  })
+
+    post(() => {
+      Log.v(this, s"onAdvance: title=$title, author=$author")
+      listener.onAdvance(title, author)
+      Log.v(this, s"onVideo: uri=$uri, format=$format, startTime=$startTime")
+      listener.onVideo(uri, format, startTime)
+      loadImage(imageAddress).into(listener)
+    })
+  }
 }
 
 object CommunicationHandler {
