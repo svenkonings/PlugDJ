@@ -20,6 +20,7 @@ class RoomActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState)
     viewHolder = TypedViewHolder.setContentView(this, TR.layout.rooms).asInstanceOf[TypedViewHolder.rooms]
     loadCookies(this)
+    // TODO: search rooms
     rooms() onComplete {
       case Success(rooms) => post(() => viewHolder.roomsView.setAdapter(new RoomsAdapter(rooms.getJSONArray("data"))))
       case Failure(exception) => Log.e(this, exception.getMessage)

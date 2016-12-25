@@ -23,6 +23,6 @@ javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
 
 libraryDependencies ++= Seq(
   "com.android.support" % "appcompat-v7" % "24.2.1",
-  "com.google.android.exoplayer" % "exoplayer" % "r2.1.0",
-  "com.neovisionaries" % "nv-websocket-client" % "1.30" withSources() withJavadoc(),
+  "com.google.android.exoplayer" % "exoplayer" % "r2.1.1",
+  "com.neovisionaries" % "nv-websocket-client" % "1.31" withSources() withJavadoc(),
   "com.squareup.picasso" % "picasso" % "2.5.2" withSources() withJavadoc())

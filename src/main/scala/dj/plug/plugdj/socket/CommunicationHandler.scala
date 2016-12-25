@@ -28,9 +28,8 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
     case Failure(exception) => Log.e(this, exception.getMessage)
   }
 
-  override def onTextMessage(websocket: WebSocket, text: String): Unit = {
+  override def onTextMessage(websocket: WebSocket, text: String): Unit = if (text != "h") {
     Log.v(this, s"onTextMessage: text=$text")
-    if (text == "h") return
     val array = new JSONArray(text)
     for (i <- 0 until array.length()) {
       val json = array.getJSONObject(i)

@@ -30,8 +30,9 @@ class Player(implicit context: Context) {
   private var prevUri: Uri = null
   private var startTime: Long = 0L
 
-  def prepare(uri: Uri, format: Int, startTime: Long): Unit = {
-    if (uri == prevUri && player != null && player.getPlaybackState != ExoPlayer.STATE_IDLE) return
+  private def needsPrepare(uri: Uri): Boolean = uri != prevUri || player == null || player.getPlaybackState == ExoPlayer.STATE_IDLE
+
+  def prepare(uri: Uri, format: Int, startTime: Long): Unit = if (needsPrepare(uri)) {
     Log.v(this, s"prepareYoutube: playWhenReady=$playWhenReady, videoDisabled=$videoDisabled, format=$format")
     release()
     prevUri = uri
@@ -73,9 +74,7 @@ class Player(implicit context: Context) {
   }
 
   def release(): Unit = {
-    if (player != null) {
-      player.release()
-    }
+    if (player != null) player.release()
     player = null
     trackSelector = null
     startTime = 0L
@@ -119,8 +118,7 @@ class Player(implicit context: Context) {
     sync()
   }
 
-  private def sync(): Unit = {
-    if (player == null || startTime == 0L || !playWhenReady) return
+  private def sync(): Unit = if (player != null && startTime != 0L && playWhenReady) {
     val currentPosition = System.currentTimeMillis() - startTime
     val difference = player.getCurrentPosition - currentPosition
     if (difference < -MAX_PLAYER_DELAY || difference > MAX_PLAYER_DELAY) player.seekTo(currentPosition + BUFFER_COMPENSATION)

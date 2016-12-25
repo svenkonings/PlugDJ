@@ -7,21 +7,15 @@ import java.util
 object HttpClient {
   def headers(address: String): util.Map[String, util.List[String]] = {
     val connection = new URL(address).openConnection().asInstanceOf[HttpURLConnection]
-    try {
-      connection.getHeaderFields()
-    } finally {
-      connection.disconnect()
-    }
+    try connection.getHeaderFields()
+    finally connection.disconnect()
   }
 
   def get(address: String): String = {
     val connection = new URL(address).openConnection.asInstanceOf[HttpURLConnection]
     connection.setDoInput(true)
-    try {
-      readConnection(connection)
-    } finally {
-      connection.disconnect()
-    }
+    try readConnection(connection)
+    finally connection.disconnect()
   }
 
   def post(address: String, data: String, contentType: String = "application/json"): String = {
@@ -31,9 +25,7 @@ object HttpClient {
     try {
       writeStream(connection.getOutputStream, data)
       readConnection(connection)
-    } finally {
-      connection.disconnect()
-    }
+    } finally connection.disconnect()
   }
 
   private def readConnection(connection: HttpURLConnection): String = {

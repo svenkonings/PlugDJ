@@ -8,7 +8,7 @@ import android.support.v7.app.NotificationCompat
 import dj.plug.plugdj.R
 import dj.plug.plugdj.player.Broadcasts._
 
-class NotificationManager(val notifyId: Int = 0)(implicit context: Context) {
+class NotificationManager(val notifyId: Int = 1)(implicit context: Context) {
   private val notificationManager = NotificationManagerCompat.from(context)
 
   var playWhenReady: Boolean = true
@@ -33,9 +33,8 @@ class NotificationManager(val notifyId: Int = 0)(implicit context: Context) {
     val pendingIntent = PendingIntent.getActivity(context, notifyId, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     builder.setContentIntent(pendingIntent)
 
-    def addAction(icon: Int, string: Int, action: String): Unit = {
+    def addAction(icon: Int, string: Int, action: String): Unit =
       builder.addAction(icon, context.getString(string), generateAction(action))
-    }
 
     if (playWhenReady) {
       builder.setSmallIcon(R.drawable.ic_play_circle_filled)
