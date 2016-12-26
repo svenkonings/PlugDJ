@@ -9,6 +9,12 @@ package object plugdj {
     override def run(): Unit = function()
   })
 
-  def loadImage(path: String)(implicit context: Context): RequestCreator =
-    Picasso.`with`(context).load(path).placeholder(R.drawable.background).networkPolicy(NetworkPolicy.NO_STORE)
+  def loadImage(path: String)(implicit context: Context): RequestCreator = {
+    val picasso = Picasso.`with`(context)
+    if (path.isEmpty) {
+      picasso.load(R.drawable.background)
+    } else {
+      picasso.load(path).placeholder(R.drawable.background)
+    }.networkPolicy(NetworkPolicy.NO_STORE)
+  }
 }

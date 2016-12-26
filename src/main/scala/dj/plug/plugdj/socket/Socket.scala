@@ -58,15 +58,15 @@ class Socket(playerListener: SocketListener) {
 }
 
 object Socket {
-  private def getAuth(): String = get("https://plug.dj/_/auth/token").getJSONArray("data").getString(0)
+  def getAuth(): String = get("https://plug.dj/_/auth/token").getJSONArray("data").getString(0)
 
-  private def postJoin(room: String): String = post("https://plug.dj/_/rooms/join", new JSONObject().put("slug", room))
+  def postJoin(room: String): String = post("https://plug.dj/_/rooms/join", new JSONObject().put("slug", room))
 
-  private def getRooms() = get("https://plug.dj/_/rooms")
+  def getRooms(query: String, page: Int, limit: Int): String = get(s"https://plug.dj/_/rooms?q=$query&page=$page&limit=$limit")
 
-  private def getState(): String = get("https://plug.dj/_/rooms/state").getJSONArray("data").getString(0)
+  def getState(): String = get("https://plug.dj/_/rooms/state").getJSONArray("data").getString(0)
 
-  private def getHeaders(): util.Map[String, util.List[String]] = headers("https://plug.dj/plug-socket-test")
+  def getHeaders(): util.Map[String, util.List[String]] = headers("https://plug.dj/plug-socket-test")
 
   private def requestFuture[T](function: () => T): Future[T] = Future {
     function()
@@ -80,7 +80,7 @@ object Socket {
 
   def join(room: String): Future[String] = requestFuture(() => postJoin(room))
 
-  def rooms(): Future[String] = requestFuture(() => getRooms())
+  def rooms(query: String, page: Int, limit: Int): Future[String] = requestFuture(() => getRooms(query, page, limit))
 
   def state(): Future[String] = requestFuture(() => getState())
 }

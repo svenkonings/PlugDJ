@@ -47,7 +47,7 @@ class PlayerActivity extends AppCompatActivity {
     finishAfterTransition()
   }
 
-  def setView(): Unit = {
+  private def setView(): Unit = {
     val service = getPlayerService
     if (service != null) {
       val player = service.getPlayer
@@ -58,7 +58,7 @@ class PlayerActivity extends AppCompatActivity {
     }
   }
 
-  def clearView(): Unit = {
+  private def clearView(): Unit = {
     val service = getPlayerService
     if (service != null) {
       val player = service.getPlayer

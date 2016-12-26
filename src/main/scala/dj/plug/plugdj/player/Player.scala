@@ -44,7 +44,7 @@ class Player(implicit context: Context) {
     }
   }
 
-  def prepareYoutube(uri: Uri, startTime: Long): Unit = {
+  private def prepareYoutube(uri: Uri, startTime: Long): Unit = {
     val loadControl = new DefaultLoadControl()
     val videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(bandwidthMeter)
     trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory)
@@ -60,11 +60,11 @@ class Player(implicit context: Context) {
     player.prepare(mediaSource)
   }
 
-  def prepareSoundCloud(uri: Uri, startTime: Long): Unit = {
+  private def prepareSoundCloud(uri: Uri, startTime: Long): Unit = {
     val loadControl = new DefaultLoadControl()
     trackSelector = new DefaultTrackSelector()
     player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
-    // TODO: image as view
+    // TODO: Add artwork
     applyPlayWhenReady()
     setStartTime(startTime)
     val dataSource = generateDataSourceFactory(context, userAgent, bandwidthMeter)

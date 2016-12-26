@@ -12,8 +12,8 @@ platformTarget := "android-24"
 
 name := "PlugDJ"
 applicationId := "dj.plug.plugdj"
-version := "0.1-SNAPSHOT"
-versionCode := Some(1)
+version := "0.2"
+versionCode := Some(2)
 
 useProguard := true
 proguardOptions ++= io.Source.fromFile("proguard-custom.txt").getLines.toSeq

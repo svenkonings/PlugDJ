@@ -2,13 +2,9 @@ package dj.plug.plugdj.rooms
 
 import android.os.{Bundle, Handler}
 import android.support.v7.app.AppCompatActivity
-import dj.plug.plugdj.Conversions.stringToJson
+import android.widget.SearchView.OnQueryTextListener
 import dj.plug.plugdj.cookies.CookieStorage.loadCookies
-import dj.plug.plugdj.socket.Socket.rooms
-import dj.plug.plugdj.{Log, TR, TypedViewHolder, post}
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import dj.plug.plugdj.{TR, TypedViewHolder}
 
 class RoomActivity extends AppCompatActivity {
   implicit private val context = this
@@ -20,10 +16,15 @@ class RoomActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState)
     viewHolder = TypedViewHolder.setContentView(this, TR.layout.rooms).asInstanceOf[TypedViewHolder.rooms]
     loadCookies(this)
-    // TODO: search rooms
-    rooms() onComplete {
-      case Success(rooms) => post(() => viewHolder.roomsView.setAdapter(new RoomsAdapter(rooms.getJSONArray("data"))))
-      case Failure(exception) => Log.e(this, exception.getMessage)
-    }
+    val roomsAdapter = new RoomsAdapter()
+    viewHolder.roomsView.setAdapter(roomsAdapter)
+    viewHolder.searchView.setOnQueryTextListener(new OnQueryTextListener {
+      override def onQueryTextSubmit(query: String): Boolean = false
+
+      override def onQueryTextChange(newText: String): Boolean = {
+        roomsAdapter.getFilter.filter(newText)
+        true
+      }
+    })
   }
 }

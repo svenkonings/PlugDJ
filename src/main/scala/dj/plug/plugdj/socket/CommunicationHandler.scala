@@ -55,8 +55,8 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
     if (currentId == id) return
     currentId = id
 
-    val title = media.getString("title")
-    val author = media.getString("author")
+    val title = media.optString("title", "")
+    val author = media.optString("author", "")
     val format = media.getInt("format")
     val cid = media.getString("cid")
     val uri = format match {
@@ -65,7 +65,7 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
       case _ => Log.e(this, s"Unknown format: $format")
         return
     }
-    val imageAddress = media.getString("image")
+    val imageAddress = media.optString("image", "")
 
     post(() => {
       Log.v(this, s"onAdvance: title=$title, author=$author")

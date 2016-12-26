@@ -7,5 +7,7 @@
     <string name="idle">Nobody is playing</string>
     <string name="socket_warning">Warning: No connection</string>
 
+    <string name="search">Search by artist or song name</string>
+
     <string name="host">Hosted by: %s</string>
 </resources>
