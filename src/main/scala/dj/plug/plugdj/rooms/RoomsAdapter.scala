@@ -2,11 +2,13 @@ package dj.plug.plugdj.rooms
 
 import android.content.{Context, Intent}
 import android.os.Handler
+import android.support.v4.widget.SwipeRefreshLayout
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.Filter.FilterResults
-import android.widget.{BaseAdapter, Filter, Filterable}
-import dj.plug.plugdj.Conversions.stringToJson
+import android.widget.SearchView.OnQueryTextListener
+import android.widget.{BaseAdapter, Filter, Filterable, SearchView}
 import dj.plug.plugdj._
 import dj.plug.plugdj.player.Broadcasts._
 import dj.plug.plugdj.player.PlayerService
@@ -16,25 +18,54 @@ import org.json.JSONArray
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-class RoomsAdapter(implicit context: Context, handler: Handler) extends BaseAdapter with Filterable {
+class RoomsAdapter(searchView: SearchView, refreshLayout: SwipeRefreshLayout)(implicit context: Context, handler: Handler) extends BaseAdapter with Filterable {
   private var roomArray = new JSONArray()
   private var query = ""
   private var page = 1
   private val limit = 50
 
-  loadRooms()
+  searchView.setOnQueryTextListener(new OnQueryTextListener {
+    override def onQueryTextSubmit(query: String): Boolean = false
 
-  def loadRooms(): Unit = rooms(query, page, limit) onComplete {
-    case Success(result) =>
-      val newArray = result.getJSONArray("data")
-      roomArray = concat(roomArray, newArray)
-      post(() => notifyDataSetChanged())
-    case Failure(exception) => Log.e(this, exception.getMessage)
+    override def onQueryTextChange(newText: String): Boolean = {
+      getFilter.filter(newText)
+      true
+    }
+  })
+
+  refreshLayout.setOnRefreshListener(new OnRefreshListener {
+    override def onRefresh(): Unit = refresh()
+  })
+
+  loadRooms(false)
+
+  def refresh(): Unit = {
+    page = 1
+    loadRooms(false)
   }
 
   def nextPage(): Unit = {
     page += 1
-    loadRooms()
+    loadRooms(true)
+  }
+
+  private def loadRooms(keepOld: Boolean): Unit = {
+    startRefresh()
+    rooms(query, page, limit) onComplete {
+      case Success(newArray) =>
+        roomArray = if (keepOld) concat(roomArray, newArray) else newArray
+        post(() => stopRefresh(true))
+      case Failure(exception) =>
+        Log.e(this, exception.getMessage)
+        post(() => stopRefresh(false))
+    }
+  }
+
+  private def startRefresh(): Unit = refreshLayout.setRefreshing(true)
+
+  private def stopRefresh(changed: Boolean): Unit = {
+    if (changed) notifyDataSetChanged()
+    refreshLayout.setRefreshing(false)
   }
 
   override def getCount: Int = roomArray.length()
@@ -90,14 +121,17 @@ class RoomsAdapter(implicit context: Context, handler: Handler) extends BaseAdap
     override def publishResults(constraint: CharSequence, results: FilterResults): Unit = results.values match {
       case newArray: JSONArray =>
         roomArray = newArray
-        notifyDataSetChanged()
-      case _ => Log.e(this, s"Unknown value: ${results.values}")
+        stopRefresh(true)
+      case _ =>
+        Log.e(this, s"Unknown value: ${results.values}")
+        stopRefresh(false)
     }
 
     override def performFiltering(constraint: CharSequence): FilterResults = {
+      post(() => startRefresh())
       query = constraint.toString
       page = 1
-      val rooms = getRooms(query, page, limit).getJSONArray("data")
+      val rooms = getRooms(query, page, limit)
       val filterResults = new FilterResults()
       filterResults.values = rooms
       filterResults.count = rooms.length()

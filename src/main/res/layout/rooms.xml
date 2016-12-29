@@ -15,12 +15,19 @@
             android:queryHint="@string/search"
             android:background="#0A0A0A"/>
 
-    <GridView
-            android:id="@+id/roomsView"
+    <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:horizontalSpacing="8dp"
-            android:verticalSpacing="8dp"
-            android:numColumns="auto_fit"
-            android:background="#111317"/>
+            android:background="#111317">
+
+        <GridView
+                android:id="@+id/roomsView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:horizontalSpacing="8dp"
+                android:verticalSpacing="8dp"
+                android:numColumns="auto_fit"
+                android:background="#111317"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

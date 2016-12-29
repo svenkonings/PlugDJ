@@ -8,7 +8,7 @@ import dj.plug.plugdj.Conversions.{jsonToString, stringToJson}
 import dj.plug.plugdj.Log
 import dj.plug.plugdj.socket.HttpClient._
 import dj.plug.plugdj.socket.Socket._
-import org.json.JSONObject
+import org.json.{JSONArray, JSONObject}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -62,9 +62,9 @@ object Socket {
 
   def postJoin(room: String): String = post("https://plug.dj/_/rooms/join", new JSONObject().put("slug", room))
 
-  def getRooms(query: String, page: Int, limit: Int): String = get(s"https://plug.dj/_/rooms?q=$query&page=$page&limit=$limit")
+  def getRooms(query: String, page: Int, limit: Int): JSONArray = get(s"https://plug.dj/_/rooms?q=$query&page=$page&limit=$limit").getJSONArray("data")
 
-  def getState(): String = get("https://plug.dj/_/rooms/state").getJSONArray("data").getString(0)
+  def getState(): JSONObject = get("https://plug.dj/_/rooms/state").getJSONArray("data").getJSONObject(0)
 
   def getHeaders(): util.Map[String, util.List[String]] = headers("https://plug.dj/plug-socket-test")
 
@@ -80,7 +80,7 @@ object Socket {
 
   def join(room: String): Future[String] = requestFuture(() => postJoin(room))
 
-  def rooms(query: String, page: Int, limit: Int): Future[String] = requestFuture(() => getRooms(query, page, limit))
+  def rooms(query: String, page: Int, limit: Int): Future[JSONArray] = requestFuture(() => getRooms(query, page, limit))
 
-  def state(): Future[String] = requestFuture(() => getState())
+  def state(): Future[JSONObject] = requestFuture(() => getState())
 }

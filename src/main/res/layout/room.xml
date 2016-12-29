@@ -18,7 +18,7 @@
             android:drawableLeft="@drawable/ic_supervisor_account"
             android:textColor="#FFFFFFFF"
             android:ellipsize="end"
-            android:singleLine="true"/>
+            android:maxLines="1"/>
 
     <TextView
             android:id="@+id/guests"
@@ -31,7 +31,7 @@
             android:drawableLeft="@drawable/ic_person"
             android:textColor="#808691"
             android:ellipsize="end"
-            android:singleLine="true"
+            android:maxLines="1"
             tools:ignore="RelativeOverlap"/>
 
     <ImageView
@@ -62,7 +62,7 @@
             android:drawableStart="@drawable/ic_volume_up"
             android:textColor="#808691"
             android:ellipsize="end"
-            android:singleLine="true"/>
+            android:maxLines="1"/>
 
     <TextView
             android:id="@+id/roomName"
@@ -73,7 +73,7 @@
             android:textColor="#FFFFFFFF"
             android:textSize="24sp"
             android:ellipsize="end"
-            android:singleLine="true"/>
+            android:maxLines="1"/>
 
     <TextView
             android:id="@+id/host"
@@ -84,5 +84,5 @@
             android:textColor="#808691"
             android:textSize="12sp"
             android:ellipsize="end"
-            android:singleLine="true"/>
+            android:maxLines="1"/>
 </RelativeLayout>
