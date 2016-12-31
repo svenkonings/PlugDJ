@@ -3,6 +3,7 @@ package dj.plug.plugdj.player
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
+import com.google.android.exoplayer2.ExoPlayer.STATE_IDLE
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.dash.{DashMediaSource, DefaultDashChunkSource}
@@ -10,7 +11,7 @@ import com.google.android.exoplayer2.trackselection.{AdaptiveVideoTrackSelection
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.google.android.exoplayer2.upstream._
 import com.google.android.exoplayer2.util.Util
-import com.google.android.exoplayer2.{DefaultLoadControl, ExoPlayer, ExoPlayerFactory, SimpleExoPlayer}
+import com.google.android.exoplayer2.{DefaultLoadControl, ExoPlayerFactory, SimpleExoPlayer}
 import dj.plug.plugdj.Log
 import dj.plug.plugdj.player.Player._
 import dj.plug.plugdj.socket.CommunicationHandler.{SOUNDCLOUD, YOUTUBE}
@@ -20,17 +21,22 @@ class Player(implicit context: Context) {
   private val bandwidthMeter = new DefaultBandwidthMeter()
   private val userAgent = Util.getUserAgent(context, "PlugDJ")
 
+  // Applied for players with video
   private var _view: SimpleExoPlayerView = null
   private var _videoDisabled = false
+
+  // Applied for all players
+  private var _listener: EventListener = null
   private var _playWhenReady = true
 
+  // Player variables
   private var player: SimpleExoPlayer = null
   private var trackSelector: DefaultTrackSelector = null
-  private var currentFormat: Int = 0
+  private var currentFormat = 0
   private var prevUri: Uri = null
-  private var startTime: Long = 0L
+  private var startTime = 0L
 
-  private def needsPrepare(uri: Uri): Boolean = uri != prevUri || player == null || player.getPlaybackState == ExoPlayer.STATE_IDLE
+  private def needsPrepare(uri: Uri): Boolean = uri != prevUri || player == null || player.getPlaybackState == STATE_IDLE
 
   def prepare(uri: Uri, format: Int, startTime: Long): Unit = if (needsPrepare(uri)) {
     Log.v(this, s"prepareYoutube: playWhenReady=$playWhenReady, videoDisabled=$videoDisabled, format=$format")
@@ -49,9 +55,13 @@ class Player(implicit context: Context) {
     val videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(bandwidthMeter)
     trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory)
     player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
+
     applyView()
     applyVideoDisabled()
+
+    applyListener()
     applyPlayWhenReady()
+
     setStartTime(startTime)
     val manifestDataSource = generateDataSourceFactory(context, userAgent)
     val chunkDataSource = generateDataSourceFactory(context, userAgent, bandwidthMeter)
@@ -64,8 +74,11 @@ class Player(implicit context: Context) {
     val loadControl = new DefaultLoadControl()
     trackSelector = new DefaultTrackSelector()
     player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
+
     // TODO: Add artwork
+    applyListener()
     applyPlayWhenReady()
+
     setStartTime(startTime)
     val dataSource = generateDataSourceFactory(context, userAgent, bandwidthMeter)
     val extractors = new DefaultExtractorsFactory()
@@ -81,6 +94,15 @@ class Player(implicit context: Context) {
   }
 
   private def hasVideo(): Boolean = currentFormat == 1
+
+  def listener: EventListener = _listener
+
+  def listener_=(value: EventListener): Unit = {
+    _listener = value
+    applyListener()
+  }
+
+  def applyListener(): Unit = if (player != null && listener != null) player.addListener(listener)
 
   def view: SimpleExoPlayerView = _view
 
