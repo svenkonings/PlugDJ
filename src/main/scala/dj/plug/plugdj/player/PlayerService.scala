@@ -7,10 +7,11 @@ import android.graphics.drawable.{BitmapDrawable, Drawable}
 import android.net.{ConnectivityManager, Uri}
 import android.os.{IBinder, PowerManager}
 import android.support.v4.content.LocalBroadcastManager
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.neovisionaries.ws.client.WebSocket
 import com.squareup.picasso.Picasso.LoadedFrom
-import dj.plug.plugdj.MainApplication._
-import dj.plug.plugdj.cookies.CookieStorage._
+import dj.plug.plugdj.MainApplication.setPlayerService
+import dj.plug.plugdj.cookies.CookieStorage.{loadCookies, storeCookies}
 import dj.plug.plugdj.player.Broadcasts._
 import dj.plug.plugdj.socket.{Socket, SocketListener}
 import dj.plug.plugdj.{Log, R}
@@ -107,12 +108,20 @@ class PlayerService extends Service with SocketListener {
 
   private def connectSocket(): Future[WebSocket] = if (slug != null) socket.connectAndJoin(slug) else socket.connect()
 
-  def getPlayer: Player = player
-
-  def setPlayWhenReady(playWhenReady: Boolean): Unit = {
+  private def setPlayWhenReady(playWhenReady: Boolean): Unit = {
     player.playWhenReady = playWhenReady
     notificationManager.playWhenReady = playWhenReady
     notificationManager.update()
+  }
+
+  def setView(view: SimpleExoPlayerView): Unit = {
+    player.view = view
+    player.videoDisabled = false
+  }
+
+  def clearView(): Unit = {
+    player.videoDisabled = true
+    player.view = null
   }
 
   override def onAdvance(title: String, author: String): Unit = {

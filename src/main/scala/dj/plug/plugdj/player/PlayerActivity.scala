@@ -4,7 +4,7 @@ import android.content.{BroadcastReceiver, Context, Intent, IntentFilter}
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
-import dj.plug.plugdj.MainApplication._
+import dj.plug.plugdj.MainApplication.getPlayerService
 import dj.plug.plugdj.player.Broadcasts._
 import dj.plug.plugdj.rooms.RoomActivity
 import dj.plug.plugdj.{Log, TR, TypedViewHolder}
@@ -32,38 +32,25 @@ class PlayerActivity extends AppCompatActivity {
   override def onResume(): Unit = {
     super.onResume()
     LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(BROADCAST))
-    setView()
-  }
-
-  override def onPause(): Unit = {
-    super.onPause()
-    LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
-    clearView()
-  }
-
-  override def onBackPressed(): Unit = {
-    startActivity(new Intent(this, classOf[RoomActivity])
-      .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK))
-    finishAfterTransition()
-  }
-
-  private def setView(): Unit = {
     val service = getPlayerService
     if (service != null) {
-      val player = service.getPlayer
-      player.view = viewHolder.playerView
-      player.videoDisabled = false
+      service.setView(viewHolder.playerView)
     } else {
       onBackPressed()
     }
   }
 
-  private def clearView(): Unit = {
+  override def onPause(): Unit = {
+    super.onPause()
+    LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
     val service = getPlayerService
     if (service != null) {
-      val player = service.getPlayer
-      player.videoDisabled = true
-      player.view = null
+      service.clearView()
     }
+  }
+
+  override def onBackPressed(): Unit = {
+    startActivity(new Intent(this, classOf[RoomActivity]).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK))
+    finishAfterTransition()
   }
 }
