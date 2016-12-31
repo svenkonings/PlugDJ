@@ -164,6 +164,9 @@
 # view res/layout/abc_alert_dialog_button_bar_material.xml #generated:39
 -keep class android.support.v4.widget.Space { <init>(...); }
 
+# view res/layout/rooms.xml #generated:18
+-keep class android.support.v4.widget.SwipeRefreshLayout { <init>(...); }
+
 # view res/layout/abc_action_menu_item_layout.xml #generated:17
 -keep class android.support.v7.view.menu.ActionMenuItemView { <init>(...); }
 

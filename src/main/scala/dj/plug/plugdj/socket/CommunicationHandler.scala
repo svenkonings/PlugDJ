@@ -24,11 +24,11 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
     case Success(state) =>
       val playback = state.getJSONObject("playback")
       Log.v(this, s"onState: playback=$playback")
-      media(playback.getJSONObject("media"), dateToLong(playback.getString("startTime")))
+      if (playback.has("media")) media(playback.getJSONObject("media"), dateToLong(playback.getString("startTime")))
     case Failure(exception) => Log.e(this, exception.getMessage)
   }
 
-  override def onTextMessage(websocket: WebSocket, text: String): Unit = if (text != "h") {
+  override def onTextMessage(websocket: WebSocket, text: String): Unit = if (text != EMPTY) {
     Log.v(this, s"onTextMessage: text=$text")
     val array = new JSONArray(text)
     for (i <- 0 until array.length()) {
@@ -46,7 +46,7 @@ class CommunicationHandler(listener: SocketListener) extends WebSocketAdapter {
   override def handleCallbackError(websocket: WebSocket, cause: Throwable): Unit = Log.e(this, cause.getMessage)
 
   private def advance(parameters: JSONObject): Unit =
-    media(parameters.getJSONObject("m"), dateToLong(parameters.getString("t")))
+    media(parameters.getJSONObject(MEDIA), dateToLong(parameters.getString(TIMESTAMP)))
 
   private var currentId: Int = -1
 

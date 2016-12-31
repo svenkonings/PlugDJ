@@ -7,6 +7,7 @@ import com.neovisionaries.ws.client.{WebSocket, WebSocketFactory}
 import dj.plug.plugdj.Conversions.{jsonToString, stringToJson}
 import dj.plug.plugdj.Log
 import dj.plug.plugdj.socket.HttpClient._
+import dj.plug.plugdj.socket.Messages._
 import dj.plug.plugdj.socket.Socket._
 import org.json.{JSONArray, JSONObject}
 
@@ -19,24 +20,24 @@ class Socket(playerListener: SocketListener) {
 
   private var socket: WebSocket = null
 
-  def join(room: String): Future[String] = {
-    Log.v(this, s"Joining room: $room")
-    Socket.join(room) andThen {
+  def join(slug: String): Future[String] = {
+    Log.v(this, s"Joining room: $slug")
+    Socket.join(slug) andThen {
       case Success(_) => listener.applyState()
     }
   }
 
-  def connect(): Future[WebSocket] = auth() map { auth =>
+  def connect(): Future[WebSocket] = auth() map { token =>
     socket = new WebSocketFactory().createSocket("wss://godj.plug.dj/socket")
     socket.addHeader("Origin", "https://plug.dj")
     socket.addListener(listener)
     socket.connect()
     Log.v(this, "connected")
-    send("auth", auth)
+    send("auth", token)
   }
 
-  def connectAndJoin(room: String): Future[WebSocket] = connect() andThen {
-    case Success(_) => join(room)
+  def connectAndJoin(slug: String): Future[WebSocket] = connect() andThen {
+    case Success(_) => join(slug)
   }
 
   def isConnected: Boolean = socket != null && socket.isOpen
@@ -49,9 +50,9 @@ class Socket(playerListener: SocketListener) {
   def send(action: String, message: String): WebSocket = {
     if (!isConnected) throw new IOException("Not connected.")
     val payload = new JSONObject()
-    payload.put("a", action)
-    payload.put("p", message)
-    payload.put("t", (System.currentTimeMillis / 1000L).toInt)
+    payload.put(ACTION, action)
+    payload.put(PARAMETER, message)
+    payload.put(TIMESTAMP, (System.currentTimeMillis / 1000L).toInt)
     Log.v(this, s"send: payload=$payload")
     socket.sendText(payload)
   }

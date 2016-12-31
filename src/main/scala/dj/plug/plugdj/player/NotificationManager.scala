@@ -2,7 +2,7 @@ package dj.plug.plugdj.player
 
 import android.app.{Notification, PendingIntent}
 import android.content.{Context, Intent}
-import android.graphics.Bitmap
+import android.graphics.{Bitmap, BitmapFactory}
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.app.NotificationCompat
 import dj.plug.plugdj.R
@@ -13,8 +13,8 @@ class NotificationManager(val notifyId: Int = 1)(implicit context: Context) {
 
   var playWhenReady: Boolean = true
   var title: String = context.getString(R.string.app_name)
-  var userName: String = null
-  var bitmap: Bitmap = null
+  var userName: String = ""
+  var bitmap: Bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background)
   var connected: Boolean = true
 
   def update(): Unit = {
@@ -46,8 +46,8 @@ class NotificationManager(val notifyId: Int = 1)(implicit context: Context) {
     addAction(R.drawable.ic_stop, R.string.stop, ACTION_STOP)
 
     builder.setContentTitle(title)
-    if (userName != null) builder.setContentText(userName)
-    if (bitmap != null) builder.setLargeIcon(bitmap)
+    builder.setContentText(userName)
+    builder.setLargeIcon(bitmap)
     if (!connected) {
       builder.setSmallIcon(R.drawable.ic_error)
       builder.setContentText(context.getString(R.string.socket_warning))
