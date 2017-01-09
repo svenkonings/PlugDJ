@@ -6,9 +6,9 @@ resolvers += Resolver.jcenterRepo
 enablePlugins(AndroidApp)
 android.useSupportVectors
 
-buildToolsVersion := Some("24.0.3")
+buildToolsVersion := Some("25.0.2")
 minSdkVersion := "16"
-platformTarget := "android-24"
+platformTarget := "android-25"
 
 name := "PlugDJ"
 applicationId := "dj.plug.plugdj"
@@ -22,7 +22,7 @@ shrinkResources := true
 javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
 
 libraryDependencies ++= Seq(
-  "com.android.support" % "appcompat-v7" % "24.2.1",
+  "com.android.support" % "appcompat-v7" % "25.1.0",
   "com.google.android.exoplayer" % "exoplayer" % "r2.1.1",
   "com.neovisionaries" % "nv-websocket-client" % "1.31" withSources() withJavadoc(),
   "com.squareup.picasso" % "picasso" % "2.5.2" withSources() withJavadoc())

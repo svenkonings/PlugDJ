@@ -14,8 +14,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:gravity="center_vertical"
-            android:drawableStart="@drawable/ic_supervisor_account"
-            android:drawableLeft="@drawable/ic_supervisor_account"
+            android:drawableStart="@drawable/ic_people"
+            android:drawableLeft="@drawable/ic_people"
             android:textColor="#FFFFFFFF"
             android:ellipsize="end"
             android:maxLines="1"/>
