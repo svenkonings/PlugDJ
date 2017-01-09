@@ -17,6 +17,7 @@ public class CookieStorage {
     public static void loadCookies(Context context) {
         if (CookieHandler.getDefault() == null) {
             CookieHandler.setDefault(loadCookieManager(getCookieFile(context)));
+            Log.v(TAG, "CookieManager set.");
         } else {
             Log.v(TAG, "CookieManager already set.");
         }
@@ -26,6 +27,7 @@ public class CookieStorage {
         CookieHandler cookieHandler = CookieHandler.getDefault();
         if (cookieHandler instanceof CookieManager) {
             storeCookieManager(getCookieFile(context), (CookieManager) cookieHandler);
+            Log.v(TAG, "CookieManager stored.");
         } else {
             Log.e(TAG, "Default CookieManager not set.");
         }
@@ -92,7 +94,10 @@ public class CookieStorage {
         for (Map.Entry<URI, List<CookieWrapper>> entry : uriIndex.entrySet()) {
             URI uri = entry.getKey();
             for (CookieWrapper cookieWrapper : entry.getValue()) {
-                cookieStore.add(uri, cookieWrapper.getCookie());
+                HttpCookie cookie = cookieWrapper.getCookie();
+                if (!cookie.hasExpired()) {
+                    cookieStore.add(uri, cookie);
+                }
             }
         }
         return cookieManager;
@@ -101,7 +106,9 @@ public class CookieStorage {
     private static List<CookieWrapper> wrapCookies(List<HttpCookie> cookies) {
         List<CookieWrapper> wrappedCookies = new ArrayList<>(cookies.size());
         for (HttpCookie cookie : cookies) {
-            wrappedCookies.add(new CookieWrapper(cookie));
+            if (!cookie.hasExpired()) {
+                wrappedCookies.add(new CookieWrapper(cookie));
+            }
         }
         return wrappedCookies;
     }
