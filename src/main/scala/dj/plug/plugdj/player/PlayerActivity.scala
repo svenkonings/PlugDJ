@@ -2,6 +2,7 @@ package dj.plug.plugdj.player
 
 import android.content.{BroadcastReceiver, Context, Intent, IntentFilter}
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import dj.plug.plugdj.MainApplication.getPlayerService
@@ -51,6 +52,6 @@ class PlayerActivity extends AppCompatActivity {
 
   override def onBackPressed(): Unit = {
     startActivity(new Intent(this, classOf[RoomActivity]).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK))
-    finishAfterTransition()
+    ActivityCompat.finishAfterTransition(this)
   }
 }

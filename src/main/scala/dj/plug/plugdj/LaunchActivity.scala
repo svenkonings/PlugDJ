@@ -1,6 +1,7 @@
 package dj.plug.plugdj
 
 import android.content.Intent
+import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import dj.plug.plugdj.MainApplication.hasPlayerService
 import dj.plug.plugdj.player.PlayerActivity
@@ -17,6 +18,6 @@ class LaunchActivity extends AppCompatActivity {
       new Intent(this, classOf[RoomActivity])
     }.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK)
     startActivity(intent)
-    finishAfterTransition()
+    ActivityCompat.finishAfterTransition(this)
   }
 }
