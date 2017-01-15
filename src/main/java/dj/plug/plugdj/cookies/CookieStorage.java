@@ -84,7 +84,9 @@ public class CookieStorage {
         }
         List<CookieWrapper> remainingCookies = wrapCookies(cookieStore.getCookies());
         remainingCookies.removeAll(indexedCookies);
-        uriIndex.put(null, remainingCookies);
+        if (!remainingCookies.isEmpty()) {
+            uriIndex.put(null, remainingCookies);
+        }
         return uriIndex;
     }
 
