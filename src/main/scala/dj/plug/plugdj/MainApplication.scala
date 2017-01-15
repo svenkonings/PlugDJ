@@ -5,26 +5,26 @@ import android.content.Context
 import dj.plug.plugdj.player.PlayerService
 
 class MainApplication extends Application {
-  private var playerService: PlayerService = null
+  private var _playerService: PlayerService = null
 
-  def getPlayerService: PlayerService = playerService
+  def playerService: PlayerService = _playerService
 
-  def hasPlayerService: Boolean = playerService != null
+  def hasPlayerService: Boolean = _playerService != null
 
-  def setPlayerService(value: PlayerService): Unit = playerService = value
+  def playerService_=(value: PlayerService): Unit = _playerService = value
 }
 
 object MainApplication {
-  def getMainApplication(implicit context: Context): MainApplication = context match {
+  def mainApplication(implicit context: Context): MainApplication = context match {
     case context: Activity => context.getApplication.asInstanceOf[MainApplication]
     case context: Service => context.getApplication.asInstanceOf[MainApplication]
     case context: Application => context.asInstanceOf[MainApplication]
     case _ => throw new IllegalArgumentException("Not an Activity, Service or Application.")
   }
 
-  def getPlayerService(implicit context: Context): PlayerService = getMainApplication.getPlayerService
+  def playerService(implicit context: Context): PlayerService = mainApplication.playerService
 
-  def hasPlayerService(implicit context: Context): Boolean = getMainApplication.hasPlayerService
+  def hasPlayerService(implicit context: Context): Boolean = mainApplication.hasPlayerService
 
-  def setPlayerService(value: PlayerService)(implicit context: Context): Unit = getMainApplication.setPlayerService(value)
+  def playerService_=(value: PlayerService)(implicit context: Context): Unit = mainApplication.playerService_=(value)
 }

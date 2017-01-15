@@ -1,27 +1,17 @@
 package dj.plug.plugdj.player
 
-import android.content.{BroadcastReceiver, Context, Intent, IntentFilter}
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
-import dj.plug.plugdj.MainApplication.getPlayerService
-import dj.plug.plugdj.player.Broadcasts._
+import dj.plug.plugdj.MainApplication.playerService
 import dj.plug.plugdj.rooms.RoomActivity
-import dj.plug.plugdj.{Log, TR, TypedViewHolder}
+import dj.plug.plugdj.{TR, TypedViewHolder}
 
-class PlayerActivity extends AppCompatActivity {
+class PlayerActivity extends AppCompatActivity with ServiceListener {
   implicit private val context = this
 
   private var viewHolder: TypedViewHolder.player = null
-
-  private val receiver = new BroadcastReceiver {
-    override def onReceive(context: Context, intent: Intent): Unit = intent.getStringExtra(BROADCAST) match {
-      // TODO: display warning and error messages
-      case SERVICE_STOPPED => onBackPressed()
-      case _ => Log.e(PlayerActivity.this, s"Unknown command: ${intent.getStringExtra(BROADCAST)}")
-    }
-  }
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -32,9 +22,9 @@ class PlayerActivity extends AppCompatActivity {
 
   override def onResume(): Unit = {
     super.onResume()
-    LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(BROADCAST))
-    val service = getPlayerService
+    val service = playerService
     if (service != null) {
+      service.listener = this
       service.setView(viewHolder.playerView)
     } else {
       onBackPressed()
@@ -43,10 +33,10 @@ class PlayerActivity extends AppCompatActivity {
 
   override def onPause(): Unit = {
     super.onPause()
-    LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
-    val service = getPlayerService
+    val service = playerService
     if (service != null) {
       service.clearView()
+      service.listener = null
     }
   }
 
@@ -54,4 +44,6 @@ class PlayerActivity extends AppCompatActivity {
     startActivity(new Intent(this, classOf[RoomActivity]).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK))
     ActivityCompat.finishAfterTransition(this)
   }
+
+  override def stop(): Unit = onBackPressed()
 }

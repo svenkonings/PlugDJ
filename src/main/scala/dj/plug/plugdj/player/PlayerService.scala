@@ -6,11 +6,10 @@ import android.graphics.Bitmap
 import android.graphics.drawable.{BitmapDrawable, Drawable}
 import android.net.{ConnectivityManager, Uri}
 import android.os.{IBinder, PowerManager}
-import android.support.v4.content.LocalBroadcastManager
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.neovisionaries.ws.client.WebSocket
 import com.squareup.picasso.Picasso.LoadedFrom
-import dj.plug.plugdj.MainApplication.setPlayerService
+import dj.plug.plugdj.MainApplication.playerService
 import dj.plug.plugdj.cookies.CookieStorage.{loadCookies, storeCookies}
 import dj.plug.plugdj.player.Broadcasts._
 import dj.plug.plugdj.socket.{Socket, SocketListener}
@@ -28,6 +27,8 @@ class PlayerService extends Service with SocketListener {
   private var socket: Socket = null
 
   private var slug: String = null
+
+  var listener: ServiceListener = null
 
   private val connectivityReceiver = new BroadcastReceiver {
     override def onReceive(context: Context, intent: Intent): Unit = {
@@ -55,9 +56,8 @@ class PlayerService extends Service with SocketListener {
     socket = new Socket(this)
     registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
-    setPlayerService(this)
+    playerService = this
   }
-
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     if (intent != null) handleIntent(intent)
@@ -86,8 +86,8 @@ class PlayerService extends Service with SocketListener {
   override def onBind(intent: Intent): IBinder = null
 
   override def onDestroy(): Unit = {
-    sendLocalBroadcast(SERVICE_STOPPED)
-    setPlayerService(null)
+    if (listener != null) listener.stop()
+    playerService = null
 
     unregisterReceiver(connectivityReceiver)
     socket.disconnect()
@@ -98,12 +98,6 @@ class PlayerService extends Service with SocketListener {
     notificationManager.cancel()
 
     wakeLock.release()
-  }
-
-  private def sendLocalBroadcast(message: String): Unit = {
-    val intent = new Intent(BROADCAST)
-    intent.putExtra(BROADCAST, message)
-    LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
   }
 
   private def connectSocket(): Future[WebSocket] = if (slug != null) socket.connectAndJoin(slug) else socket.connect()
