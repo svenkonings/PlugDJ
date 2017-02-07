@@ -11,12 +11,13 @@ import com.neovisionaries.ws.client.WebSocket
 import com.squareup.picasso.Picasso.LoadedFrom
 import dj.plug.plugdj.MainApplication.playerService
 import dj.plug.plugdj.cookies.CookieStorage.{loadCookies, storeCookies}
-import dj.plug.plugdj.player.Broadcasts._
+import dj.plug.plugdj.player.Intents._
 import dj.plug.plugdj.socket.{Socket, SocketListener}
 import dj.plug.plugdj.{Log, R}
 
 import scala.concurrent.Future
 
+// TODO: Listen for player errors and pass info to listener
 class PlayerService extends Service with SocketListener {
   implicit private val context = this
 

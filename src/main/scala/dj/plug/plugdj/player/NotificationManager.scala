@@ -6,7 +6,7 @@ import android.graphics.{Bitmap, BitmapFactory}
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.app.NotificationCompat
 import dj.plug.plugdj.R
-import dj.plug.plugdj.player.Broadcasts._
+import dj.plug.plugdj.player.Intents._
 
 class NotificationManager(val notifyId: Int = 1)(implicit context: Context) {
   private val notificationManager = NotificationManagerCompat.from(context)

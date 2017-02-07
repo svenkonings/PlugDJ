@@ -22,7 +22,7 @@ shrinkResources := true
 javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
 
 libraryDependencies ++= Seq(
-  "com.android.support" % "appcompat-v7" % "25.1.0",
-  "com.google.android.exoplayer" % "exoplayer" % "r2.1.1",
+  "com.android.support" % "appcompat-v7" % "25.1.1",
+  "com.google.android.exoplayer" % "exoplayer" % "r2.2.0",
   "com.neovisionaries" % "nv-websocket-client" % "1.31" withSources() withJavadoc(),
   "com.squareup.picasso" % "picasso" % "2.5.2" withSources() withJavadoc())

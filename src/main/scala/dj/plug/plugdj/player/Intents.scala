@@ -1,9 +1,6 @@
 package dj.plug.plugdj.player
 
-object Broadcasts {
-  val BROADCAST = "dj.plug.plugdj.BROADCAST"
-  val SERVICE_STOPPED = "dj.plug.plugdj.SERVICE_STOPPED"
-
+object Intents {
   val SLUG = "dj.plug.plugdj.SLUG"
   val START_ACTIVITY = "dj.plug.plugdj.START_ACTIVITY"
 

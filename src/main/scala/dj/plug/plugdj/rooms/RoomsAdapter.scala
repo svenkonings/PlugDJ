@@ -10,7 +10,7 @@ import android.widget.Filter.FilterResults
 import android.widget.SearchView.OnQueryTextListener
 import android.widget.{BaseAdapter, Filter, Filterable, SearchView}
 import dj.plug.plugdj._
-import dj.plug.plugdj.player.Broadcasts._
+import dj.plug.plugdj.player.Intents._
 import dj.plug.plugdj.player.PlayerService
 import dj.plug.plugdj.socket.Socket.{getRooms, rooms}
 import org.json.JSONArray
@@ -134,7 +134,7 @@ class RoomsAdapter(searchView: SearchView, refreshLayout: SwipeRefreshLayout)(im
       val rooms = getRooms(query, page, limit)
       val filterResults = new FilterResults()
       filterResults.values = rooms
-      filterResults.count = rooms.length()
+      filterResults.count = rooms.length
       filterResults
     }
   }
