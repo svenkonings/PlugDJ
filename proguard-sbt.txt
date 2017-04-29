@@ -158,6 +158,17 @@
 -keepclasseswithmembers class * {
     @android.support.annotation.Keep <init>(...);
 }
+-keepnames class * implements java.io.Serializable
+
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    !static !transient <fields>;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
 # view res/layout/abc_alert_dialog_material.xml #generated:41
 -keep class android.support.v4.widget.NestedScrollView { <init>(...); }
 

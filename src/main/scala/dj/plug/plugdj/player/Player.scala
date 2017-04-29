@@ -39,6 +39,7 @@ class Player(implicit context: Context) {
   private def needsPrepare(uri: Uri): Boolean = uri != prevUri || player == null || player.getPlaybackState == STATE_IDLE
 
   def prepare(uri: Uri, format: Int, startTime: Long): Unit = if (needsPrepare(uri)) {
+    // TODO: set uri and starttime without prepare
     Log.v(this, s"prepareYoutube: playWhenReady=$playWhenReady, videoDisabled=$videoDisabled, format=$format")
     release()
     prevUri = uri

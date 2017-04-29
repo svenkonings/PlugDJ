@@ -16,7 +16,7 @@ version := "0.2"
 versionCode := Some(2)
 
 useProguard := true
-proguardOptions ++= io.Source.fromFile("proguard-custom.txt").getLines.toSeq
+proguardOptions ++= io.Source.fromFile("proguard-project.txt").getLines.toSeq
 shrinkResources := true
 
 javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
